@@ -129,10 +129,6 @@ function App() {
     setVolume(Math.max(0, Math.min(100, newVolume)));
   };
 
-  const handleThemeChange = (newTheme: Theme) => {
-    setTheme(newTheme);
-  };
-
   const handleResetData = async () => {
     await resetAllData();
     setShowMemoryPanel(false);
