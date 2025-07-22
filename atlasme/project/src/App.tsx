@@ -5,8 +5,9 @@ import { MemoryPanel } from './components/MemoryPanel';
 import { MobileNavBar } from './components/MobileNavBar';
 import { TopBar } from './components/TopBar';
 import { StatsView } from './components/StatsView';
-import { SearchView } from './components/SearchView';
-import { MoreView } from './components/MoreView';
+import { ToolsView } from './components/ToolsView';
+import { AccountView } from './components/AccountView';
+import { SettingsPanel } from './components/SettingsPanel';
 import { AudioPlayer } from './components/AudioPlayer';
 import { useTheme } from './hooks/useTheme';
 import { useMemoryData } from './hooks/useMemoryData';
@@ -15,11 +16,12 @@ import { MICRO_COUNTRIES } from './constants/microCountries';
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [activeView, setActiveView] = useState<'globe' | 'stats' | 'search' | 'more'>('globe');
+  const [activeView, setActiveView] = useState<'globe' | 'stats' | 'tools' | 'account'>('globe');
   const [showMemoryPanel, setShowMemoryPanel] = useState(false);
   const [currentCountry, setCurrentCountry] = useState<any>(null);
   const [isMusicMuted, setIsMusicMuted] = useState(true);
   const [volume, setVolume] = useState(50);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
   
   const { theme, setTheme } = useTheme();
   const { memoryData, updateCountryData, resetAllData, getCountryData } = useMemoryData();
@@ -119,6 +121,18 @@ function App() {
     setTheme(newTheme);
   };
 
+  const handleToggleMusic = () => {
+    setIsMusicMuted(!isMusicMuted);
+  };
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(Math.max(0, Math.min(100, newVolume)));
+  };
+
+  const handleThemeChange = (newTheme: Theme) => {
+    setTheme(newTheme);
+  };
+
   const handleResetData = async () => {
     await resetAllData();
     setShowMemoryPanel(false);
@@ -148,23 +162,17 @@ function App() {
         );
       case 'stats':
         return <StatsView memoryData={memoryData} />;
-      case 'search':
+      case 'tools':
         return (
-          <SearchView 
+          <ToolsView 
             memoryData={memoryData} 
             onCountrySearch={handleCountrySearch}
           />
         );
-      case 'more':
+      case 'account':
         return (
-          <MoreView
-            theme={theme}
-            onThemeChange={handleThemeChange}
+          <AccountView
             onResetData={handleResetData}
-            onToggleMusic={handleToggleMusic}
-            isMusicMuted={isMusicMuted}
-            volume={volume}
-            onVolumeChange={handleVolumeChange}
             memoryData={memoryData}
             onUpdateCountryData={updateCountryData}
             globeRef={globeRef}
@@ -183,7 +191,11 @@ function App() {
       
       {!showSplash && (
         <>
-          <TopBar memoryData={memoryData} />
+          <TopBar 
+            memoryData={memoryData} 
+            showSettings={activeView === 'globe'}
+            onSettingsClick={() => setShowSettingsPanel(true)}
+          />
           
           <div className="main-content">
             {renderMainContent()}
@@ -202,6 +214,18 @@ function App() {
               getCountryData={getCountryData}
               theme={theme}
               globeRef={globeRef}
+            />
+          )}
+          
+          {showSettingsPanel && (
+            <SettingsPanel
+              theme={theme}
+              onThemeChange={handleThemeChange}
+              onToggleMusic={handleToggleMusic}
+              isMusicMuted={isMusicMuted}
+              volume={volume}
+              onVolumeChange={handleVolumeChange}
+              onClose={() => setShowSettingsPanel(false)}
             />
           )}
         </>
