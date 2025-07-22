@@ -137,14 +137,6 @@ function App() {
     }
   };
 
-  const handleToggleMusic = () => {
-    setIsMusicMuted(!isMusicMuted);
-  };
-
-  const handleVolumeChange = (newVolume: number) => {
-    setVolume(Math.max(0, Math.min(100, newVolume)));
-  };
-
   const renderMainContent = () => {
     switch (activeView) {
       case 'globe':
